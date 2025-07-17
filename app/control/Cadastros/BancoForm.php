@@ -65,13 +65,10 @@ class BancoForm extends TPage
             TTransaction::open('bolso');
 
             $this->form->validate();
+            $data = $this->form->getData();
 
             $banco = new Banco();
-
-            $banco->nome = $param['nome'];
-            $banco->ativo = 1;            
-            $banco->agencia = $param['agencia'];
-            $banco->conta = $param['conta'];
+            $banco->fromArray((array) $data);
 
             $banco->store();
 
@@ -100,11 +97,8 @@ class BancoForm extends TPage
 
             $this->form->setFormTitle("Banco - " . $data->nome);
 
-
-
             TForm::sendData('banco_form', $data, '', false);
 
-            
             $this->form->addAction('Salvar', new TAction([$this, 'onSave']), 'fa:save green');
 
             TTransaction::close();

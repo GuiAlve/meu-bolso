@@ -112,11 +112,11 @@ class BancoLista extends TPage
     public function onDelete($param)
     {
         try {
-            TTransaction::open('tradeintegra');
+            TTransaction::open('bolso');
 
             $banco = new Banco($param['key']);
 
-            $mensagem = "Deseja realmente inativar o cliente <b>{$banco->entidade->nome}</b>?";
+            $mensagem = "Deseja realmente inativar o cliente <b>{$banco->nome}</b>?";
 
             $acao = new TAction([$this, 'onDeleteConfirmed'], ['key' => $param['key']]);
 
@@ -135,11 +135,11 @@ class BancoLista extends TPage
     public static function onDeleteConfirmed($param)
     {
         try {
-            TTransaction::open('tradeintegra');
+            TTransaction::open('bolso');
 
             $banco = new Banco($param['key']);
 
-            $banco->delete();
+            $banco->desativar();
 
             $pos_action = new TAction(['BancoLista', 'onReload']);
 

@@ -16,15 +16,9 @@ class Banco extends TRecord
         parent::addAttribute('updated_at');
     }
 
-    public function setAtivo($ativo)
+    public function desativar()
     {
-        $this->ativo = $ativo;
-        return $this;
-    }
-
-    public function ativar()
-    {
-        $this->ativo = 1;
+        $this->ativo = 0;
         $this->store();
     }
 
