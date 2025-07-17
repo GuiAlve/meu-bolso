@@ -1,5 +1,7 @@
 <?php
 
+use Adianti\Registry\TSession;
+
 class DashboardReceitaDespesas extends TPage
 {
     public function __construct()
@@ -15,6 +17,7 @@ class DashboardReceitaDespesas extends TPage
         // Total Receitas
         $repoR = new TRepository('Receita');
         $critR = new TCriteria;
+        $critR->add(new TFilter('usuario_id', '=', TSession::getValue('userid')));
         $critR->add(new TFilter('data_hora', '>=', $inicio->format('Y-m-d H:i:s')));
         $critR->add(new TFilter('data_hora', '<=', $fim->format('Y-m-d H:i:s')));
         $receitas = $repoR->load($critR);
@@ -23,6 +26,7 @@ class DashboardReceitaDespesas extends TPage
         // Total Despesas
         $repoD = new TRepository('Despesa');
         $critD = new TCriteria;
+        $critD->add(new TFilter('usuario_id', '=', TSession::getValue('userid')));
         $critD->add(new TFilter('data_hora', '>=', $inicio->format('Y-m-d H:i:s')));
         $critD->add(new TFilter('data_hora', '<=', $fim->format('Y-m-d H:i:s')));
         $despesas = $repoD->load($critD);
