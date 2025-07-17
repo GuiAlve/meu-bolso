@@ -6,7 +6,9 @@ class CategoriaReceita extends TRecord
 {
     const TABLENAME  = 'categoria_receita';
     const PRIMARYKEY = 'id';
-    const IDPOLICY   = 'max'; // 'max' para MySQL AUTO_INCREMENT, use 'serial' para PostgreSQL
+    const IDPOLICY   = 'max';
+
+    const CREATEDBY  = 'usuario_id';
 
     public function __construct($id = NULL, $callObjectLoad = TRUE)
     {
@@ -14,5 +16,6 @@ class CategoriaReceita extends TRecord
 
         parent::addAttribute('nome');
         parent::addAttribute('cor');
+        parent::addAttribute('usuario_id');
     }
 }

@@ -13,6 +13,9 @@ use Adianti\Widget\Container\TPanelGroup;
 
         $this->setDatabase('bolso');
         $this->setActiveRecord('CategoriaReceita');
+        $criteria = new TCriteria();
+        $criteria->add( new TFilter( 'usuario_id', '=', TSession::getValue('userid')));
+        $this->setCriteria($criteria);
 
         // create the form
         $this->form = new BootstrapFormBuilder('form_categoria_receita');
@@ -88,9 +91,14 @@ use Adianti\Widget\Container\TPanelGroup;
         $vbox->style = 'width: 100%';
         $vbox->add(new TXMLBreadCrumb('menu.xml', __CLASS__));
 
+        $this->pageNavigation = new TPageNavigation();
+        $this->pageNavigation->setAction(new TAction( [$this, 'onReload' ]));
+        $this->pageNavigation->enableCounters();
+
         $panel = new TPanelGroup('<i class="fa-solid fa-money-bill-trend-up fa-2x" style="margin-right: 8px;"></i><b style="font-size: 24px; ">Categorias de receitas</b>');
         $panel->add($this->form);
         $panel->add($this->datagrid);
+        $panel->addFooter($this->pageNavigation);
 
         $vbox->add($panel);
 
