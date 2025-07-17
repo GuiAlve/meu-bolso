@@ -22,6 +22,7 @@ class DespesasLista extends TPage
         $this->setLimit(100);
 
         $this->addFilterField('descricao', 'like', 'descricao');
+        $this->addFilterField('(SELECT nome FROM banco WHERE id = banco_id)', 'like', 'banco');
         $this->addFilterField('MONTH(data_hora)', '=', 'filtro_mes');
         $this->addFilterField('YEAR(data_hora)', '=', 'filtro_ano');
         $this->addFilterField('data_hora', 'like', 'data');
@@ -129,10 +130,9 @@ class DespesasLista extends TPage
 
         $valor = new TEntry('valor');
         $data = new TDate('data');
-        $conta = new TEntry('conta');
+        $banco = new TEntry('banco');
         $categoria = new TDBCombo('categoria', 'bolso', 'Categoria', 'id', 'nome');
         $descricao = new TEntry('descricao');
-
 
         //filtro de mês
         $filtro_mes = new TCombo('filtro_mes');
@@ -189,18 +189,18 @@ class DespesasLista extends TPage
         $data->setDatabaseMask('yyyy-mm-dd');
 
         $valor->tabindex = -1;
-        $conta->tabindex = -1;
+        $banco->tabindex = -1;
         $categoria->tabindex = -1;
         $data->tabindex = -1;
         $descricao->tabindex = -1;
 
         $valor->exitOnEnter();
-        $conta->exitOnEnter();
+        $banco->exitOnEnter();
         //$categoria->exitOnEnter();
         $descricao->exitOnEnter();
 
         $valor->setExitAction(new TAction( [$this, 'onSearch'], ['static' => '1']) );
-        $conta->setExitAction(new TAction( [$this, 'onSearch'], ['static' => '1']) );
+        $banco->setExitAction(new TAction( [$this, 'onSearch'], ['static' => '1']) );
         $data->setExitAction(new TAction( [$this, 'onSearch'], ['static' => '1']) );
         $descricao->setExitAction(new TAction( [$this, 'onSearch'], ['static' => '1']) );
         $categoria->setChangeAction( new TAction([$this, 'onSearch'], ['static' => '1']));      
@@ -212,7 +212,7 @@ class DespesasLista extends TPage
         $tdEmpty2       = TElement::tag('td', '');
         $tdValor       = TElement::tag('td', $valor);
         $tdData        = TElement::tag('td', $data);
-        $tdConta       = TElement::tag('td', $conta);
+        $tdConta       = TElement::tag('td', $banco);
         $tdCategoria   = TElement::tag('td', $categoria);
         $tdDescricao   = TElement::tag('td', $descricao);
 
@@ -231,7 +231,7 @@ class DespesasLista extends TPage
         
         $this->form->addField($valor);
         $this->form->addField($data);
-        $this->form->addField($conta);
+        $this->form->addField($banco);
         $this->form->addField($categoria);
         $this->form->addField($descricao);
 
