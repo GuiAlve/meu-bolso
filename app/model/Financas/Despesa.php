@@ -8,6 +8,9 @@ class Despesa extends TRecord
     const PRIMARYKEY = 'id';
     const IDPOLICY   = 'max';
 
+    const CREATEDBY  = 'usuario_id';
+    const CREATEDAT  = 'created_at';
+
     private $categoria;
     private $banco;
 
@@ -23,6 +26,7 @@ class Despesa extends TRecord
         parent::addAttribute('banco_id');
         parent::addAttribute('parcela');
         parent::addAttribute('parcelamento_registro');
+        parent::addAttribute('usuario_id');
         parent::addAttribute('created_at');
         parent::addAttribute('updated_at');
     }
