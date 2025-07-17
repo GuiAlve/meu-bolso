@@ -1,7 +1,11 @@
 <?php
 
 use Adianti\Control\TPage;
+use Adianti\Database\TCriteria;
+use Adianti\Database\TFilter;
+use Adianti\Registry\TSession;
 use Adianti\Widget\Form\TDate;
+use Adianti\Widget\Form\TFile;
 use Adianti\Widget\Form\TNumeric;
 use Adianti\Widget\Wrapper\TDBCombo;
 use Adianti\Widget\Wrapper\TDBUniqueSearch;
@@ -27,7 +31,9 @@ class DespesaForm extends TPage
         $id            = new THidden('id');
         $valor         = new TEntry('valor');
         $descricao     = new TEntry('descricao');
-        $categoria     = new TDBCombo('categoria_id', 'bolso', 'Categoria', 'id', 'nome');
+        $criteria = new TCriteria();
+        $criteria->add(new TFilter('usuario_id', '=', TSession::getValue('userid')));
+        $categoria     = new TDBCombo('categoria_id', 'bolso', 'Categoria', 'id', 'nome', '', $criteria);
         $data_hora     = new TDate('data_hora');
         $banco         = new TDBCombo('banco_id', 'bolso', 'Banco', 'id', 'nome');
         $parcelas      = new TNumeric('parcelas', '', '', '');           // nº de parcelas
