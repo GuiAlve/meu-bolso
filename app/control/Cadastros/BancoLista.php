@@ -17,6 +17,10 @@ class BancoLista extends TPage
         $this->addFilterField('conta', 'like', 'conta');
         $this->addFilterField('id', '=', 'id');
 
+        $criteria = new TCriteria();
+        $criteria->add( new TFilter( 'usuario_id', '=', TSession::getValue('userid')));
+        $this->setCriteria($criteria);
+
         // Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
         $this->datagrid->width = '100%';
