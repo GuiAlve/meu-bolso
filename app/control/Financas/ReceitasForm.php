@@ -22,7 +22,9 @@ class ReceitasForm extends TPage
         $id         = new THidden('id');
         $valor      = new TEntry('valor');
         $descricao  = new TEntry('descricao');
-        $categoria  = new TDBCombo('categoria_id', 'bolso', 'CategoriaReceita', 'id', 'nome');
+        $criteria = new TCriteria();
+        $criteria->add(new TFilter('usuario_id', '=', TSession::getValue('userid')));
+        $categoria  = new TDBCombo('categoria_id', 'bolso', 'CategoriaReceita', 'id', 'nome', '', $criteria);
         //$cartao     = new TDBCombo('cartao_id', 'bolso', 'Cartao', 'id', 'nome');
         $data_hora  = new TDate('data_hora');
         $obs        = new TText('observacoes');
