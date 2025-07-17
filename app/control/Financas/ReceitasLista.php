@@ -36,7 +36,6 @@ class ReceitasLista extends TPage
         $filtros = TSession::getValue(__CLASS__.'_filter_data');
 
         if (empty($filtros->filtro_mes) OR empty($filtros->filtro_ano)) {
-            $criteria = new TCriteria;
 
             $inicio = date('Y-m-01') . ' 00:00:00';
             $fim    = date('Y-m-t') . ' 23:59:59';

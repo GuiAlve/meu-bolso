@@ -38,7 +38,6 @@ class DespesasLista extends TPage
 
 
         if (empty($filtros->filtro_mes) AND empty($filtros->filtro_ano)) {
-            $criteria = new TCriteria;
 
             $inicio = date('Y-m-01') . ' 00:00:00';
             $fim    = date('Y-m-t') . ' 23:59:59';
@@ -144,7 +143,6 @@ class DespesasLista extends TPage
             '9'=>'Set','10'=>'Out','11'=>'Nov','12'=>'Dez'
         ]);
         $mes_atual = date('n');  // Ex: 7
-        $filtro_mes->setValue($mes_atual);
 
         $filtro_mes->setChangeAction(new TAction([$this, 'onSearch'], ['static' => '1']));
         //fim filtro de mês
@@ -156,6 +154,7 @@ class DespesasLista extends TPage
         for ($i = date('Y'); $i >= date('Y')-5; $i--) {
             $anos[$i] = $i;
         }
+        $filtro_ano->addItems($anos);
 
         $filtro_ano->setChangeAction(new TAction([$this, 'onSearch'], ['static' => '1']));
         //fim filtro de ano
