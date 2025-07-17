@@ -6,6 +6,9 @@ class Receita extends TRecord
     const PRIMARYKEY = 'id';
     const IDPOLICY   =  'max';
 
+    const CREATEDBY  = 'usuario_id';
+    const CREATEDAT  = 'created_at';
+
     public function __construct($id = NULL, $callObjectLoad = TRUE)
     {
         parent::__construct($id, $callObjectLoad);
@@ -15,6 +18,7 @@ class Receita extends TRecord
         parent::addAttribute('conta_id');
         parent::addAttribute('data_hora');
         parent::addAttribute('descricao');
+        parent::addAttribute('usuario_id');
         parent::addAttribute('created_at');
         parent::addAttribute('updated_at');
     }

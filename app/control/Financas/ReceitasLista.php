@@ -14,6 +14,13 @@ class ReceitasLista extends TPage
 
         $this->setDatabase('bolso');
         $this->setActiveRecord('Receita');
+        $criteria = new TCriteria();
+        $criteria->add( new TFilter( 'usuario_id', '=', TSession::getValue('userid')));
+        $this->setCriteria($criteria);
+
+        $this->setDefaultOrder('created_at', 'asc');
+        $this->setLimit(100);
+
         $this->addFilterField('descricao', 'like', 'descricao');
         $this->addFilterField('data_hora', 'like', 'data');
         $this->addFilterField('MONTH(data_hora)', '=', 'filtro_mes');
@@ -28,7 +35,7 @@ class ReceitasLista extends TPage
 
         $filtros = TSession::getValue(__CLASS__.'_filter_data');
 
-        if (empty($filtros->filtro_mes) AND empty($filtros->filtro_ano)) {
+        if (empty($filtros->filtro_mes) OR empty($filtros->filtro_ano)) {
             $criteria = new TCriteria;
 
             $inicio = date('Y-m-01') . ' 00:00:00';
@@ -116,9 +123,6 @@ class ReceitasLista extends TPage
         $this->form->setProperty('onkeydown', 'if(event.keyCode == 13) { event.preventDefault(); return false; }');
         $this->form->add($this->datagrid);
 
-        $mes_atual = date('n');
-        $ano_atual = date('Y');
-
         //filtro de mês
         $filtro_mes = new TCombo('filtro_mes');
         $filtro_mes->setSize('100%');
@@ -141,7 +145,6 @@ class ReceitasLista extends TPage
             $anos[$i] = $i;
         }
         $filtro_ano->addItems($anos);
-        $filtro_ano->setValue($ano_atual);
 
         $filtro_ano->setChangeAction(new TAction([$this, 'onSearch'], ['static' => '1']));
         //fim filtro de ano
@@ -149,8 +152,7 @@ class ReceitasLista extends TPage
         $filtros = TSession::getValue(__CLASS__.'_filter_data');
         if (empty($filtros)) {
             $filtros = new stdClass;
-            $filtros->filtro_mes = $mes_atual;
-            $filtros->filtro_ano = $ano_atual;
+
             TSession::setValue(__CLASS__.'_filter_data', $filtros);
         }
 
