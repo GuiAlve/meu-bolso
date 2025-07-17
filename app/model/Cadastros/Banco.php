@@ -14,6 +14,7 @@ class Banco extends TRecord
         parent::addAttribute('agencia');
         parent::addAttribute('nome');
         parent::addAttribute('conta');
+        parent::addAttribute('ativo');
         parent::addAttribute('usuario_id');
         parent::addAttribute('created_at');
         parent::addAttribute('updated_at');

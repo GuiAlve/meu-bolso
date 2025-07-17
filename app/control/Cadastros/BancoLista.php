@@ -24,21 +24,41 @@ class BancoLista extends TPage
 
         $col_id            = new TDataGridColumn('id', 'Código', 'left', );
         $col_nome          = new TDataGridColumn('nome', 'Nome', 'left');
-        $col_agencia          = new TDataGridColumn('agencia', 'Agência', 'left');
-        $col_conta          = new TDataGridColumn('conta', 'Conta', 'left');
+        $col_agencia       = new TDataGridColumn('agencia', 'Agência', 'left');
+        $col_conta         = new TDataGridColumn('conta', 'Conta', 'left');
+        $col_ativo         = new TDataGridColumn('ativo', 'Ativo', 'left');
 
         $col_id->setAction(new TAction([$this, 'onReload']), ['order' => 'id']);
         $col_nome->setAction(new TAction([$this, 'onReload']), ['order' => 'entidade->nome']);
 
+        $col_ativo->setTransformer(function($value, $object, $row) {
+            $div = new TElement('span');
+
+            if ($value == 0) {
+                $div = new TElement('button');
+                $div->style = 'color: red; background: none; border: none; padding: 0; margin: 0; cursor: pointer;';
+                $div->add(new TImage('fa:x'));
+            
+            } else {
+                $div = new TElement('button');
+                $div->style = 'color:rgb(51, 170, 81); background: none; border: none; padding: 0; margin: 0; cursor: pointer;';
+                $div->add(new TImage('fa:check'));
+            }
+            return $div;
+        });
+
         $this->datagrid->addColumn($col_nome);
         $this->datagrid->addColumn($col_agencia);
         $this->datagrid->addColumn($col_conta);
+        $this->datagrid->addColumn($col_ativo);
 
         // Ações
         $editar = new TDataGridAction(['BancoForm', 'onEdit'], ['id' => '{id}', 'register_state' => 'false']);
+        $editar->setDisplayCondition( array($this, 'displayColumn') );
         $this->datagrid->addAction($editar, 'Editar', 'fa:edit blue');
 
         $deletar = new TDataGridAction([$this, 'onDelete'], ['id' => '{id}', 'register_state' => 'false']);
+        $deletar->setDisplayCondition( array($this, 'displayColumn') );
         $this->datagrid->addAction($deletar, 'Inativar', 'far:trash-alt red');
 
         $this->datagrid->createModel();
@@ -75,6 +95,7 @@ class BancoLista extends TPage
         $tdnome         = TElement::tag('td', $nome);
         $tdagencia      = TElement::tag('td', $agencia);
         $tdconta        = TElement::tag('td', $conta);
+        $tdEmpty3       = TElement::tag('td', '');
 
         // Adiciona as células à linha
         $tr->add($tdEmpty1);
@@ -82,6 +103,7 @@ class BancoLista extends TPage
         $tr->add($tdnome);
         $tr->add($tdagencia);
         $tr->add($tdconta);
+        $tr->add($tdEmpty3);
 
         $this->form->addField($id);
         $this->form->addField($nome);
@@ -143,7 +165,7 @@ class BancoLista extends TPage
 
             $pos_action = new TAction(['BancoLista', 'onReload']);
 
-            new TMessage('info', 'Banco excluído com sucesso', $pos_action);
+            new TMessage('info', 'Banco desativado com sucesso', $pos_action);
 
             TTransaction::close();
 
@@ -153,5 +175,15 @@ class BancoLista extends TPage
 
             TTransaction::rollback();
         }
+    }
+
+    public function displayColumn( $object )
+    {
+        if ($object->ativo == 1)
+        {
+            return TRUE;
+        }else{
+            return FALSE;
+        }   
     }
 }
