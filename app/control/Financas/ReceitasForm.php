@@ -18,14 +18,16 @@ class ReceitasForm extends TPage
 
         $this->form = new BootstrapFormBuilder('form_receita');
 
+        $criteria = new TCriteria();
+        $criteria->add(new TFilter('usuario_id', '=', TSession::getValue('userid')));
+
         // Campos
         $id         = new THidden('id');
         $valor      = new TEntry('valor');
         $descricao  = new TEntry('descricao');
-        $criteria = new TCriteria();
-        $criteria->add(new TFilter('usuario_id', '=', TSession::getValue('userid')));
         $categoria  = new TDBCombo('categoria_id', 'bolso', 'CategoriaReceita', 'id', 'nome', '', $criteria);
-        //$cartao     = new TDBCombo('cartao_id', 'bolso', 'Cartao', 'id', 'nome');
+        $criteria->add(new TFilter('ativo', '=', '1'));
+        $banco      = new TDBCombo('banco_id', 'bolso', 'Banco', 'id', 'nome', '', $criteria);
         $data_hora  = new TDate('data_hora');
         $obs        = new TText('observacoes');
 
@@ -39,7 +41,7 @@ class ReceitasForm extends TPage
         $descricao->setProperty('autocomplete', 'off');
 
         $categoria->setSize('100%');
-        //$cartao->setSize('100%');
+        $banco->setSize('100%');
 
         $data_hora->setSize('100%');
         $data_hora->setMask('dd/mm/yyyy');
@@ -51,7 +53,7 @@ class ReceitasForm extends TPage
         $this->form->addFields([$id]);
         $this->form->addFields([new TLabel('Valor (R$)', '#000', '14px', ''), $valor], [new TLabel('Categoria'), $categoria]);
         $this->form->addFields([new TLabel('Descrição'), $descricao]);
-        //$this->form->addFields([new TLabel('Cartão'), $cartao]);
+        $this->form->addFields([new TLabel('Banco'), $banco]);
         $this->form->addFields([new TLabel('Data'), $data_hora]);
         $this->form->addFields([new TLabel('Observações'), $obs]);
 
