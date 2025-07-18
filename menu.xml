@@ -1,6 +1,6 @@
 <menu>
     <menuitem label='_t{Administration}'>
-        <icon>fas:sliders fa-fw red</icon>
+        <icon>fas:sliders fa-fw blue</icon>
         <menu>
               <menuitem label='Dashboard'>
                   <icon>fas:tachometer-alt fa-fw</icon>
@@ -84,7 +84,7 @@
     </menuitem>
 
     <menuitem label='Cadastros'>
-        <icon>fa:user-tie white</icon>
+        <icon>fa:user-tie</icon>
         <menu>
             <menuitem label='Categorias'>
                 <icon>fa:list-ol</icon>

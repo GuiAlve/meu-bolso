@@ -77,7 +77,7 @@ return [
             'use_swal' => '1'
         ],
         'theme' => [
-            'menu_dark_color' => 'rgb(29 45 83)',
+            'menu_dark_color' => '#303033',
             'menu_mode'  => 'dark',
             'main_mode'  => 'light'
         ]
