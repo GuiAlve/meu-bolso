@@ -20,7 +20,6 @@ class Despesa extends TRecord
 
         parent::addAttribute('valor');
         parent::addAttribute('categoria_id');
-        parent::addAttribute('conta_id');
         parent::addAttribute('data_hora');
         parent::addAttribute('descricao');
         parent::addAttribute('banco_id');

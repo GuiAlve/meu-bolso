@@ -15,7 +15,7 @@ class Receita extends TRecord
 
         parent::addAttribute('valor');
         parent::addAttribute('categoria_id');
-        parent::addAttribute('conta_id');
+        parent::addAttribute('banco_id');
         parent::addAttribute('data_hora');
         parent::addAttribute('descricao');
         parent::addAttribute('usuario_id');
@@ -28,8 +28,8 @@ class Receita extends TRecord
         return new Categoria($this->categoria_id);
     }
 
-    public function get_conta()
+    public function get_banco()
     {
-        return new Conta($this->conta_id);
+        return new Banco($this->banco_id);
     }
 }
