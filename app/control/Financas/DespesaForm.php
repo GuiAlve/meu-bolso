@@ -35,7 +35,8 @@ class DespesaForm extends TPage
         $criteria->add(new TFilter('usuario_id', '=', TSession::getValue('userid')));
         $categoria     = new TDBCombo('categoria_id', 'bolso', 'Categoria', 'id', 'nome', '', $criteria);
         $data_hora     = new TDate('data_hora');
-        $banco         = new TDBCombo('banco_id', 'bolso', 'Banco', 'id', 'nome');
+        $criteria->add(new TFilter('ativo', '=', '1'));
+        $banco         = new TDBCombo('banco_id', 'bolso', 'Banco', 'id', 'nome', '', $criteria);
         $parcelas      = new TNumeric('parcelas', '', '', '');           // nº de parcelas
 
         $valor->setNumericMask(2, ',', '.', false);
