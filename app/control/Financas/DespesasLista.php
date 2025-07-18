@@ -18,7 +18,7 @@ class DespesasLista extends TPage
         $criteria->add( new TFilter( 'usuario_id', '=', TSession::getValue('userid')));
         $this->setCriteria($criteria);
 
-        $this->setDefaultOrder('created_at', 'asc');
+        $this->setDefaultOrder('created_at', 'desc');
         $this->setLimit(100);
 
         $this->addFilterField('descricao', 'like', 'descricao');

@@ -18,7 +18,7 @@ class ReceitasLista extends TPage
         $criteria->add( new TFilter( 'usuario_id', '=', TSession::getValue('userid')));
         $this->setCriteria($criteria);
 
-        $this->setDefaultOrder('created_at', 'asc');
+        $this->setDefaultOrder('created_at', 'desc');
         $this->setLimit(100);
 
         $this->addFilterField('descricao', 'like', 'descricao');
@@ -176,7 +176,7 @@ class ReceitasLista extends TPage
         $valor = new TEntry('valor');
         $data = new TDate('data');
         $conta = new TEntry('conta');
-        $categoria = new TDBCombo('categoria', 'bolso', 'Categoria', 'id', 'nome');
+        $categoria = new TDBCombo('categoria', 'bolso', 'CategoriaReceita', 'id', 'nome');
         $descricao = new TEntry('descricao');
 
         $valor->setNumericMask(2, ',', '.', true);
