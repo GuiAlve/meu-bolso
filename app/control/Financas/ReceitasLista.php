@@ -100,7 +100,7 @@ class ReceitasLista extends TPage
             '>{$categoriaNome}</span>";
         });
 
-                // define totals
+                // define totais
         $col_valor->setTotalFunction( function($values) {
             return $soma = array_sum((array) $values);
             return "<span style='color:rgb(59, 206, 78); font-weight: bold;'>$formatado</span>";
@@ -114,14 +114,16 @@ class ReceitasLista extends TPage
 
         //$this->datagrid->addColumn($col_id);
         $this->datagrid->addColumn($col_valor);
-        $this->datagrid->addColumn($col_data);
-        $this->datagrid->addColumn($col_conta);
         $this->datagrid->addColumn($col_categoria);
         $this->datagrid->addColumn($col_descricao);
-
+        $this->datagrid->addColumn($col_conta);
+        $this->datagrid->addColumn($col_data);
+        
+        /*
         $col_conta->enableAutoHide(500);
         $col_data->enableAutoHide(600);
         $col_descricao->enableAutoHide(700);
+        */
 
         $this->datagrid->createModel();
 
@@ -201,7 +203,6 @@ class ReceitasLista extends TPage
 
         $valor->exitOnEnter();
         $conta->exitOnEnter();
-        //$categoria->exitOnEnter();
         $descricao->exitOnEnter();
 
         $valor->setExitAction(new TAction( [$this, 'onSearch'], ['static' => '1']) );
@@ -213,32 +214,33 @@ class ReceitasLista extends TPage
         $tr = new TElement('tr');
         $this->datagrid->prependRow($tr);
 
-        $tdEmpty1       = TElement::tag('td', '');
-        $tdEmpty2       = TElement::tag('td', '');
+        $tdEmpty1      = TElement::tag('td', '');
+        $tdEmpty2      = TElement::tag('td', '');
         $tdValor       = TElement::tag('td', $valor);
         $tdData        = TElement::tag('td', $data);
         $tdConta       = TElement::tag('td', $conta);
         $tdCategoria   = TElement::tag('td', $categoria);
         $tdDescricao   = TElement::tag('td', $descricao);
 
-        // Adiciona classes de responsividade
+        /* Adiciona classes de responsividade
         $tdData->{'class'}      = 'd-none d-md-table-cell';
         $tdConta->{'class'}     = 'd-none d-lg-table-cell';
         $tdCategoria->{'class'} = 'd-none d-xl-table-cell';
-
+        */
+        
         $tr->add($tdEmpty1);
         $tr->add($tdEmpty2);
         $tr->add($tdValor);
-        $tr->add($tdData);
-        $tr->add($tdConta);
         $tr->add($tdCategoria);
         $tr->add($tdDescricao);
+        $tr->add($tdConta);
+        $tr->add($tdData);
 
         $this->form->addField($valor);
-        $this->form->addField($data);
-        $this->form->addField($conta);
         $this->form->addField($categoria);
         $this->form->addField($descricao);
+        $this->form->addField($conta);
+        $this->form->addField($data);
 
         $this->form->setData(TSession::getValue(__CLASS__.'_filter_data'));
         
@@ -248,6 +250,8 @@ class ReceitasLista extends TPage
         
         $vbox->add($panel);
         $panel->add($this->form);
+
+        $panel->getBody()->style = "overflow-x:auto;";
 
         $panel->addHeaderActionLink('<b>Novo</b>', new TAction(['ReceitasForm', 'onNovo'], ['register_state' => 'false']), 'fa:plus green');
         $panel->addFooter($this->pageNavigation);
