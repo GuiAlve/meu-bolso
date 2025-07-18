@@ -3,7 +3,7 @@
   "name": "Meu Bolso",
   "icons": [
     {
-      "src": "app/images/icon.png",
+      "src": "app/images/icon-bolso.png",
       "type": "image/png",
       "sizes": "128x128"
     }
