@@ -30,8 +30,18 @@ class LoginForm extends TPage
         if (!empty($ini['login']['logo']))
         {
             $logo = new TImage($ini['login']['logo']);
-            $logo->style = 'margin:auto;max-width:100%';
-            $this->form->setFormTitle($logo);
+            $logo->style = 'max-width:100%';
+
+            $nome = new TElement('div');
+            $nome->add('Meu Bolso');
+            $nome->style = 'font-size: 24px; font-weight: bold; margin:auto;';
+
+            $container = new TElement('div');
+            $container->style = 'margin:auto; text-align: center;';
+
+            $container->add($nome);
+            $container->add($logo);
+            $this->form->setFormTitle($container);
         }
         
         // create the form fields

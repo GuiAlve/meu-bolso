@@ -43,7 +43,7 @@ return [
           'SystemPasswordRenewalForm',
           'SystemConcurrentAccessView'
         ],
-        'user_register' => '1',
+        'user_register' => '0',
         'reset_password' => '1',
         'default_groups' => '2',
         'default_screen' => '30',
@@ -57,8 +57,8 @@ return [
         'string' => '#FFC472',
     ],
     'login' => [
-        'logo' => '',
-        'background' => ''
+        'logo' => 'favicon.png',
+        'background' => 'login-background.jpg'
     ],
     'template' => [
         'navbar' => [
