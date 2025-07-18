@@ -57,7 +57,7 @@ return [
         'string' => '#FFC472',
     ],
     'login' => [
-        'logo' => 'favicon.png',
+        'logo' => 'icone-bolso.png',
         'background' => 'login-background.jpg'
     ],
     'template' => [
