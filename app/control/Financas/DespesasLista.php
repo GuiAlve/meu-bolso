@@ -35,9 +35,6 @@ class DespesasLista extends TPage
         ); 
 
         $filtros = TSession::getValue(__CLASS__.'_filter_data');
-
-
-
         if (empty($filtros->filtro_mes) AND empty($filtros->filtro_ano)) {
 
             $inicio = date('Y-m-01') . ' 00:00:00';
@@ -49,6 +46,9 @@ class DespesasLista extends TPage
             $this->setCriteria($criteria);
         }
 
+        $this->setOrderCommand('banco->nome', '(SELECT nome FROM banco WHERE banco_id = banco.id)');
+        $this->setOrderCommand('categoria->nome', '(SELECT nome FROM categoria WHERE categoria_id = categoria.id)');
+
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
         $this->datagrid->width  = '100%';
 
@@ -58,6 +58,12 @@ class DespesasLista extends TPage
         $col_data      = new TDataGridColumn('data_hora', 'Data', 'center', '10%');
         $col_descricao = new TDataGridColumn('descricao', 'Descrição', 'center');
         $col_conta     = new TDataGridColumn('banco->nome', 'Conta', 'center');
+
+        $col_valor->setAction(new TAction([$this, 'onReload']), ['order' => 'valor']);
+        $col_categoria->setAction(new TAction([$this, 'onReload']), ['order' => 'categoria->nome']);
+        $col_data->setAction(new TAction([$this, 'onReload']), ['order' => 'data_hora']);
+        $col_descricao->setAction(new TAction([$this, 'onReload']), ['order' => 'descricao']);
+        $col_conta->setAction(new TAction([$this, 'onReload']), ['order' => 'banco->nome']);
 
         // Valor em verde
         $col_valor->setTransformer(function($valor) {
@@ -112,6 +118,7 @@ class DespesasLista extends TPage
         $col_conta->enableAutoHide(500);
         $col_data->enableAutoHide(600);
         $col_descricao->enableAutoHide(700);
+        
 
         //$this->datagrid->addColumn($col_id);
         $this->datagrid->addColumn($col_valor);
