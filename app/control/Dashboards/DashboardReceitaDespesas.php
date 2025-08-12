@@ -4,13 +4,64 @@ use Adianti\Registry\TSession;
 
 class DashboardReceitaDespesas extends TPage
 {
-    public function __construct()
+    public function __construct($param = null)
     {
         parent::__construct();
 
-        // Calcula períodos do mês atual
-        $inicio = (new DateTime('first day of this month'))->setTime(0,0,0);
-        $fim    = (new DateTime('last day of this month'))->setTime(23,59,59);
+        $mes = $param['mes'] ?? date('m');
+        $ano = $param['ano'] ?? date('Y');
+
+        if($mes AND $ano){
+            $inicio = DateTime::createFromFormat('Y-m-d', "{$ano}-{$mes}-01")->setTime(0,0,0);
+            $fim = (clone $inicio)->modify('last day of this month')->setTime(23,59,59);
+        }else{
+            $inicio = (new DateTime('first day of this month'))->setTime(0,0,0);
+            $fim    = (new DateTime('last day of this month'))->setTime(23,59,59);
+        }
+
+        $this->form = new TForm('form_dashboard');
+        $table = new TTable;
+
+        // meses (1..12) com nomes
+        $meses = [
+            '01' => 'Janeiro', '02' => 'Fevereiro', '03' => 'Março', '04' => 'Abril',
+            '05' => 'Maio', '06' => 'Junho', '07' => 'Julho', '08' => 'Agosto',
+            '09' => 'Setembro', '10' => 'Outubro', '11' => 'Novembro', '12' => 'Dezembro'
+        ];
+        $comboMes = new TCombo('mes');
+        $comboMes->addItems($meses);
+        $comboMes->setSize('150px');
+        if($mes){
+            $comboMes->setValue($mes);
+        }
+
+        // anos (ex.: -5 .. +1 em relação ao atual)
+        $anoAtual = (int) date('Y');
+        $anos = [];
+        for ($y = $anoAtual - 5; $y <= $anoAtual + 1; $y++) {
+            $anos[(string)$y] = (string)$y;
+        }
+        $comboAno = new TCombo('ano');
+        $comboAno->addItems($anos);
+        $comboAno->setSize('100px');
+        if($ano){
+            $comboAno->setValue($ano);
+        }
+
+
+        // botão atualizar
+        $btn = new TButton('btn_search');
+        $btn->setAction(new TAction([$this, 'onSearch']), 'Atualizar');
+        $btn->setImage('fa:search');
+
+        $this->form->setFields([$comboMes, $comboAno, $btn]);
+
+        // layout
+        $table->addRowSet(new TLabel('Mês:'), $comboMes);
+        $table->addRowSet(new TLabel('Ano:'), $comboAno);
+        $table->addRowSet('', $btn);
+
+        $this->form->add($table);
 
         TTransaction::open('bolso');
 
@@ -100,5 +151,21 @@ class DashboardReceitaDespesas extends TPage
         $container->add($chart);
 
         parent::add($container);
+        parent::add($this->form);
+        
+    }
+
+    public function onSearch($param)
+    {
+        //echo var_dump($param);
+
+                    AdiantiCoreApplication::loadPage(
+        __CLASS__, // ou 'DashboardReceitaDespesas'
+        '', // ou null se quiser só o construtor
+        [
+            'mes'  => $param['mes'],
+            'ano'  => $param['ano']
+        ]
+    );
     }
 }
