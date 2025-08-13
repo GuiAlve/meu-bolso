@@ -120,8 +120,12 @@
         <icon>fa:dollar-sign green</icon>
         <menu>
             <menuitem label='Despesas'>
-                <icon>fa:money-check-dollar red</icon>
+                <icon>fa:minus red</icon>
                 <action>DespesasLista</action>
+            </menuitem>
+            <menuitem label='Despesas Recorrentes'>
+                <icon>fa:rotate-right red</icon>
+                <action>DespesasRecorrentesLista</action>
             </menuitem>
             <menuitem label='Receitas'>
                 <icon>fa:money-bill-trend-up green</icon>

@@ -12,6 +12,8 @@ class DespesasLista extends TPage
     {
         parent::__construct();
 
+        DespesaRecorrenteService::gerarDespesas();
+
         $this->setDatabase('bolso');
         $this->setActiveRecord('Despesa');
         $criteria = new TCriteria();
@@ -247,7 +249,7 @@ class DespesasLista extends TPage
         
         $vbox = New TVBox();
         $vbox->add(new TXMLBreadCrumb('menu.xml', __CLASS__));
-        $panel = new TPanelGroup('<i class="fa-solid fa-money-check-dollar fa-2x" style="margin-right: 8px;"></i><b style="font-size: 24px; ">Despesas</b>');
+        $panel = new TPanelGroup('<i class="fa-solid fa-minus fa-2x" style="margin-right: 8px;"></i><b style="font-size: 24px; ">Despesas</b>');
         
         $vbox->add($panel);
         $panel->add($this->form);
