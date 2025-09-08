@@ -68,9 +68,10 @@ class DespesasLista extends TPage
         $col_conta->setAction(new TAction([$this, 'onReload']), ['order' => 'banco->nome']);
 
         // Valor em verde
-        $col_valor->setTransformer(function($valor) {
+        $col_valor->setTransformer(function($valor, $object) {
+            $parcela = $object ? ($object->parcela ?? '') : '';
             $formatado = 'R$ ' . number_format($valor / 100, 2, ',', '.');
-            return "<span style='color:rgb(240, 49, 49);'>$formatado</span>";
+            return "<span style='color:rgb(240, 49, 49)'>$formatado</span>" . "<span style='color:rgba(177, 177, 177, 1);'> $parcela";
         });
 
         $col_data->setTransformer(function($value){
@@ -139,7 +140,7 @@ class DespesasLista extends TPage
         $this->form->add($this->datagrid);
 
         $valor = new TEntry('valor');
-        $data = new TDate('data');
+        $data  = new TDate('data');
         $banco = new TEntry('banco');
         $categoria = new TDBCombo('categoria', 'bolso', 'Categoria', 'id', 'nome');
         $descricao = new TEntry('descricao');
