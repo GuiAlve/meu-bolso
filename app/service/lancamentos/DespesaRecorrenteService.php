@@ -8,11 +8,14 @@ class DespesaRecorrenteService
 
         $repo = new TRepository('DespesaRecorrente');
         $criteria = new TCriteria;
+        
+        $usuarioId = TSession::getValue('userid');
+        $criteria->add(new TFilter('usuario_id', '=', $usuarioId));
 
         $modelos = $repo->load($criteria);
         $mesAtual = date('m');
         $anoAtual = date('Y');
-
+       
         foreach ($modelos as $modelo)
         {
             // Pega o dia e hora originais do modelo
@@ -40,6 +43,7 @@ class DespesaRecorrenteService
             $despesa->banco_id     = $modelo->banco_id;
             $despesa->usuario_id   = $modelo->usuario_id;
             $despesa->data_hora    = $dataLancamento;
+
             $despesa->store();
 
             // Atualiza ultima_geracao
