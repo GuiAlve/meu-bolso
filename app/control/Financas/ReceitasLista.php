@@ -151,7 +151,7 @@ class ReceitasLista extends TPage
         $filtro_ano = new TCombo('filtro_ano');
         $filtro_ano->setSize('100%');
         $anos = [];
-        for ($i = date('Y'); $i >= date('Y')-5; $i--) {
+        for ($i = date('Y')+3; $i >= date('Y')-5; $i--) {
             $anos[$i] = $i;
         }
         $filtro_ano->addItems($anos);
