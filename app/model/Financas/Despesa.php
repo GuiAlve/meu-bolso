@@ -45,4 +45,5 @@ class Despesa extends TRecord
         }
         return $this->banco;
     }
+
 }

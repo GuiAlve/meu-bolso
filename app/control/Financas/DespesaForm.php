@@ -149,55 +149,45 @@ class DespesaForm extends TPage
             }
 
             if ($data->parcelas > 1) {
-                $data_inicial = new DateTime($data->data_hora);
-                $valor_total = Dinheiro::somenteNumeros($data->valor);
-                $parcelas = (int) $data->parcelas;
+                    $data_inicial = new DateTime($data->data_hora);
+                    $valor_total  = Dinheiro::somenteNumeros($data->valor);
+                    $parcelas     = (int) $data->parcelas;              
 
-                $valor_parcela = intval($valor_total / $parcelas);
-                $resto = $valor_total % $parcelas;
+                    $valor_parcela = intval($valor_total / $parcelas);
+                    $resto         = $valor_total % $parcelas;              
 
-                // Cria um ID único para identificar esse grupo de parcelamento
-                $uuid = uniqid('', true);
+                    // ID único do parcelamento
+                    $uuid = uniqid('', true);               
 
-                for ($i = 0; $i < $parcelas; $i++) {
-                    $despesa = new Despesa();
-                    $despesa->fromArray((array) $data);
+                    for ($i = 0; $i < $parcelas; $i++) {
+                        $despesa = new Despesa();
+                        $despesa->fromArray((array) $data);
+                        unset($despesa->id);                
 
-                    // Limpa o ID para forçar criação nova
-                    unset($despesa->id);
+                        
+                        if ($i == 0) {
+                            // 1ª parcela: data exatamente como veio do form
+                            $data_parcela = clone $data_inicial;
+                        } else {
+                            // Demais: primeiro dia dos meses subsequentes
+                            $data_parcela = (clone $data_inicial)->modify("first day of +{$i} month");
+                        }               
 
-                    // Define a data da parcela
-                    $data_parcela = clone $data_inicial;
+                        $despesa->data_hora = $data_parcela->format('Y-m-d H:i:s');             
 
-                    $data_parcela = (clone $data_inicial)->modify("first day of +{$i} month");
-                    $dia_original = (int) $data_inicial->format('d');
+                        // valor da parcela
+                        $despesa->valor = $valor_parcela;
+                        if ($i == $parcelas - 1) {
+                            $despesa->valor += $resto;
+                        }               
 
-                    // Tenta voltar para o mesmo dia do mês, senão pega o último dia possível
-                    $ultimo_dia = (int) $data_parcela->format('t');
-                    $dia_final = min($dia_original, $ultimo_dia);
-                    $data_parcela->setDate(
-                        (int) $data_parcela->format('Y'),
-                        (int) $data_parcela->format('m'),
-                        $dia_final
-                    );
+                        $despesa->parcela              = ($i + 1) . "/{$parcelas}";
+                        $despesa->parcelamento_registro = $uuid;                
 
-                    $despesa->data_hora = $data_parcela->format('Y-m-d H:i:s');
-
-                    // Valor da parcela (última parcela com o resto)
-                    $despesa->valor = $valor_parcela;
-                    if ($i == $parcelas - 1) {
-                        $despesa->valor += $resto;
+                        $despesa->store();
                     }
+                } else {
 
-                    // Define a numeração da parcela
-                    $despesa->parcela = ($i + 1) . "/{$parcelas}";
-                    $despesa->parcelamento_registro = $uuid;
-
-                    $despesa->store();
-                }
-
-            } else {
-                // Despesa única
                 $despesa = new Despesa();
                 $despesa->fromArray((array) $data);
 
