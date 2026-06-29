@@ -44,6 +44,11 @@
               </menuitem>
         </menu>
     </menuitem>
+
+    <menuitem label='Minecraft Server'>
+        <icon>fas:cube fa-fw green</icon>
+        <action>MinecraftServer</action>
+    </menuitem>
     
     <menuitem label='Logs'>
         <icon>fas:desktop fa-fw</icon>
