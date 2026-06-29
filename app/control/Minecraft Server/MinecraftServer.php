@@ -98,7 +98,7 @@ class MinecraftServer extends TPage
 
         if (!is_array($data))
         {
-            return ['state' => 'Erro ao consultar status', 'ip' => null];
+            return ['state' => 'Erro: ' . trim((string) $output), 'ip' => null];
         }
 
         return ['state' => $data[0] ?? 'Desconhecido', 'ip' => $data[1] ?? null];
