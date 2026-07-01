@@ -1,0 +1,71 @@
+<!--[main]-->
+<div id="chart_despesas_{$uniqid}" style="width: {$width}; height: {$height};">
+    <i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i> Carregando gráfico...
+</div>
+<script>
+$(function() {
+    if (typeof Adianti.chartsQueue == 'undefined') {
+        Adianti.chartsQueue = new Array;
+    }
+
+    function render_charts() {
+        Adianti.chartsLoaded = true;
+        while (Adianti.chartsQueue.length > 0) {
+            (Adianti.chartsQueue.shift())();
+        }
+    }
+
+    var render_despesas_pie = function() {
+        var data = google.visualization.arrayToDataTable( {$data|raw} );
+
+        var moneyFormatter = new google.visualization.NumberFormat({
+            prefix: 'R$ ',
+            decimalSymbol: ',',
+            groupingSymbol: '.',
+            fractionDigits: 2
+        });
+        moneyFormatter.format(data, 1);
+
+        var options = {
+            pieHole: 0.45,
+            colors: {$colors|raw},
+            backgroundColor: 'transparent',
+            chartArea: { left: 12, top: 16, width: '94%', height: '86%' },
+            legend: {
+                position: 'labeled',
+                textStyle: { color: '#444', fontSize: 13 }
+            },
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: { color: '#fff', fontSize: 14, bold: true },
+            sliceVisibilityThreshold: 0,
+            tooltip: { showColorCode: true, textStyle: { fontSize: 13 } },
+            fontName: 'inherit'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('chart_despesas_{$uniqid}'));
+
+        chart.draw(data, options);
+    };
+
+    Adianti.chartsQueue.push( render_despesas_pie );
+
+    if (typeof google === 'undefined' || typeof google.visualization === 'undefined') {
+        if (!Adianti.chartsLoading) {
+            Adianti.chartsLoading = true;
+            jQuery.ajax({
+                type: "GET",
+                url: "https://www.gstatic.com/charts/loader.js",
+                dataType: "script",
+                cache: true,
+                success: function() {
+                    google.charts.load('current', { 'packages': ['corechart'], 'language': 'pt-BR' });
+                    google.charts.setOnLoadCallback(render_charts);
+                }
+            });
+        }
+    } else {
+        render_despesas_pie();
+    }
+});
+</script>
+<!--[/main]-->
