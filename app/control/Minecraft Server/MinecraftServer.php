@@ -51,7 +51,7 @@ class MinecraftServer extends TPage
 
         $this->form->addContent([$card]);
 
-        $this->form->addAction('Atualizar status', new TAction([__CLASS__, 'onReload']), 'fa:sync blue');
+        $btnReload = $this->form->addAction('Atualizar status', new TAction([__CLASS__, 'onReload']), 'fa:sync blue', 'btn_reload_ec2');
 
         if ($status['state'] === 'stopped')
         {
@@ -61,6 +61,11 @@ class MinecraftServer extends TPage
         if ($status['state'] === 'running')
         {
             $this->form->addAction('Desligar', new TAction([__CLASS__, 'onStop']), 'fa:power-off red');
+        }
+
+        if (in_array($status['state'], ['pending', 'stopping']))
+        {
+            TScript::create("setTimeout(function(){ document.getElementById('btn_reload_ec2').click(); }, 5000);");
         }
 
         parent::add($this->form);
