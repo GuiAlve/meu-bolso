@@ -136,9 +136,13 @@
                 <icon>fa:money-bill-trend-up green</icon>
                 <action>ReceitasLista</action>
             </menuitem>
+            <menuitem label='Reservas'>
+                <icon>fa:piggy-bank blue</icon>
+                <action>ReservaLista</action>
+            </menuitem>
         </menu>
     </menuitem>
-    
+
     <menuitem label='Logout'>
         <action>LoginForm#method=onLogout#static=1</action>
         <icon>fas:sign-out-alt fa-fw</icon>
