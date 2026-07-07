@@ -124,6 +124,10 @@
     <menuitem label='Lançamentos'>
         <icon>fa:dollar-sign green</icon>
         <menu>
+            <menuitem label='Lançamento Rápido'>
+                <icon>fa:bolt orange</icon>
+                <action>LancamentoRapido</action>
+            </menuitem>
             <menuitem label='Despesas'>
                 <icon>fa:minus red</icon>
                 <action>DespesasLista</action>
