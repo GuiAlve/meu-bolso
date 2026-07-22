@@ -1,0 +1,5 @@
+# Ícones do Minecraft (texturas da Mojang) — deploy direto no servidor, fora do git
+app/images/minecraft/
+
+# Lixo do macOS
+.DS_Store

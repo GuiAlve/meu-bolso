@@ -30,6 +30,10 @@ class MinecraftEstatisticas extends TPage
     const MC_STATS_BUCKET = '';
     const MC_STATS_PREFIX = 'minecraft-stats';
 
+    // Pasta (servida estaticamente) com os ícones nomeados pelo id do Minecraft:
+    // ex. diamond_ore.png, stone.png, zombie.png. Ícone ausente não aparece.
+    const MC_ICON_BASE = 'app/images/minecraft';
+
     public function __construct()
     {
         parent::__construct();
@@ -196,24 +200,50 @@ class MinecraftEstatisticas extends TPage
         $cardRow->add(self::summaryCard('fa-person-walking',  '#28a745', 'Distância a pé',   number_format($caminhou / 100000, 1, ',', '.') . ' km'));
         $wrap->add($cardRow);
 
-        $wrap->add($this->buildBreakdown('Minérios e blocos minerados', $cats['minecraft:mined']  ?? [], 20));
-        $wrap->add($this->buildBreakdown('Mobs mortos',                 $cats['minecraft:killed'] ?? [], 20));
+        // separa minérios dos demais blocos (minérios aparecem mesmo com poucas unidades)
+        $ores   = [];
+        $blocos = [];
+        foreach (($cats['minecraft:mined'] ?? []) as $chave => $valor)
+        {
+            if (self::isOre($chave))
+            {
+                $ores[$chave] = $valor;
+            }
+            else
+            {
+                $blocos[$chave] = $valor;
+            }
+        }
+
+        $wrap->add($this->buildBreakdown('Minérios minerados', $ores));
+        $wrap->add($this->buildBreakdown('Blocos minerados',   $blocos));
+        $wrap->add($this->buildBreakdown('Mobs mortos',        $cats['minecraft:killed'] ?? [], 'mob'));
 
         return $wrap;
     }
 
     /**
-     * Monta uma tabela (top N, ordem decrescente) para um mapa chave => valor.
+     * Indica se a chave minerada é um minério (inclui variantes deepslate e ancient_debris).
      */
-    private function buildBreakdown($titulo, $map, $limite)
+    private static function isOre($chave)
+    {
+        $k = preg_replace('/^minecraft:/', '', (string) $chave);
+        return (substr($k, -4) === '_ore') || $k === 'ancient_debris';
+    }
+
+    /**
+     * Monta uma tabela (ordem decrescente) para um mapa chave => valor.
+     * Lista todos os itens, com barra de rolagem e altura fixa.
+     */
+    private function buildBreakdown($titulo, $map, $tipo = 'item')
     {
         arsort($map);
-        $map = array_slice($map, 0, $limite, true);
 
         $datagrid = new BootstrapDatagridWrapper(new TDataGrid);
         $datagrid->width = '100%';
 
         $c1 = new TDataGridColumn('nome',  'Item',       'left');
+        $c1->disableHtmlConversion(); // permite renderizar o <img> do ícone
         $c2 = new TDataGridColumn('valor', 'Quantidade', 'right', '30%');
         $c2->setTransformer(function($v) {
             return number_format($v, 0, ',', '.');
@@ -235,7 +265,7 @@ class MinecraftEstatisticas extends TPage
             foreach ($map as $chave => $valor)
             {
                 $o = new stdClass;
-                $o->nome  = self::prettify($chave);
+                $o->nome  = self::iconTag($chave, $tipo) . self::prettify($chave);
                 $o->valor = $valor;
                 $datagrid->addItem($o);
             }
@@ -243,9 +273,49 @@ class MinecraftEstatisticas extends TPage
 
         $panel = new TPanelGroup($titulo);
         $panel->add($datagrid);
-        $panel->getBody()->style = 'overflow-x:auto;';
+        // altura fixa (~ tamanho atual) com rolagem vertical para listar tudo
+        $panel->getBody()->style = 'max-height:640px; overflow-y:auto; overflow-x:auto;';
 
         return $panel;
+    }
+
+    /**
+     * Monta a tag <img> do ícone a partir do id (ex. minecraft:diamond_ore ->
+     * app/images/minecraft/diamond_ore.png). Se o arquivo não existir, o onerror
+     * remove a imagem e sobra apenas o nome.
+     */
+    private static function iconTag($chave, $tipo = 'item')
+    {
+        $id = preg_replace('/^minecraft:/', '', (string) $chave);
+
+        // mobs ficam em uma subpasta e com sufixo _face (ex.: mobs/zombie_face.png)
+        if ($tipo === 'mob')
+        {
+            $base = self::MC_ICON_BASE . '/mobs/' . $id . '_face';
+        }
+        else
+        {
+            $base = self::MC_ICON_BASE . '/' . $id;
+        }
+
+        // usa a extensão que existir no servidor (.png ou .webp)
+        $src = null;
+        foreach (['png', 'webp'] as $ext)
+        {
+            if (is_file($base . '.' . $ext))
+            {
+                $src = $base . '.' . $ext;
+                break;
+            }
+        }
+
+        if ($src === null)
+        {
+            return ''; // sem ícone disponível: mostra só o nome
+        }
+
+        return '<img src="' . htmlspecialchars($src, ENT_QUOTES) . '" width="20" height="20" loading="lazy" '
+             . 'style="image-rendering:pixelated; vertical-align:middle; margin-right:8px;"> ';
     }
 
     /**
@@ -261,18 +331,25 @@ class MinecraftEstatisticas extends TPage
      */
     public static function onCollect($param)
     {
+        // a instância precisa estar ligada para ler os arquivos de stats
+        $state = self::getInstanceState();
+        if ($state !== 'running')
+        {
+            TToast::show('warning', 'Para atualizar as estatísticas, o servidor precisa estar ligado (estado atual: ' . $state . ').', 'top center', 'fa:triangle-exclamation');
+            return;
+        }
+
         try
         {
             $resumo = self::collectStats();
-            new TMessage('info', "Estatísticas atualizadas: {$resumo['jogadores']} jogador(es) e {$resumo['estatisticas']} métricas.");
+            TToast::show('success', "Estatísticas atualizadas: {$resumo['jogadores']} jogador(es) e {$resumo['estatisticas']} métricas.", 'top center', 'fa:circle-check');
+            AdiantiCoreApplication::loadPage(__CLASS__);
         }
         catch (Exception $e)
         {
             TTransaction::rollbackAll();
-            new TMessage('error', $e->getMessage());
+            TToast::show('error', $e->getMessage(), 'top center', 'fa:circle-exclamation');
         }
-
-        AdiantiCoreApplication::loadPage(__CLASS__);
     }
 
     /**
@@ -283,14 +360,7 @@ class MinecraftEstatisticas extends TPage
     {
         set_time_limit(90);
 
-        // 1. a instância precisa estar ligada para ler os arquivos
-        $state = self::getInstanceState();
-        if ($state !== 'running')
-        {
-            throw new Exception('O servidor precisa estar LIGADO para coletar as estatísticas (estado atual: ' . $state . ').');
-        }
-
-        // 2. comando remoto: despeja cada stats/<uuid>.json e o usercache.json
+        // comando remoto: despeja cada stats/<uuid>.json e o usercache.json
         $statsDir  = self::MC_SERVER_DIR . '/' . self::MC_WORLD . '/stats';
         $usercache = self::MC_SERVER_DIR . '/usercache.json';
 

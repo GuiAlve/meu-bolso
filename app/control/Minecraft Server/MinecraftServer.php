@@ -89,7 +89,7 @@ class MinecraftServer extends TPage
                 }
 
                 $sessao->tempo_fmt = self::formatDuration($segundos);
-                $sessao->custo_fmt = 'US$ ' . number_format($custo, 4, ',', '.');
+                $sessao->custo_fmt = 'US$ ' . number_format($custo, 4, '.', ',');
 
                 // acumula para os totalizadores no fim da datagrid
                 $this->totalSegundos += $segundos;
@@ -118,7 +118,7 @@ class MinecraftServer extends TPage
 
             $tdCusto = new TElement('td');
             $tdCusto->{'style'} = 'text-align:right;';
-            $tdCusto->add('US$ ' . number_format($this->totalCusto, 4, ',', '.'));
+            $tdCusto->add('US$ ' . number_format($this->totalCusto, 4, '.', ','));
 
             $row->add($tdLabel);
             $row->add($tdTempo);
@@ -369,7 +369,7 @@ class MinecraftServer extends TPage
             'fa-clock', '#478fca', 'Tempo de uso — ' . $periodo, self::formatDuration($totalSegundos)
         ));
         $wrap->add(self::summaryCard(
-            'fa-dollar-sign', '#28a745', 'Custo estimado — ' . $periodo, 'US$ ' . number_format($totalCusto, 4, ',', '.')
+            'fa-dollar-sign', '#28a745', 'Custo estimado — ' . $periodo, 'US$ ' . number_format($totalCusto, 4, '.', ',')
         ));
 
         return $wrap;
