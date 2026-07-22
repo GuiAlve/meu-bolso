@@ -49,7 +49,12 @@
         <icon>fas:cube fa-fw green</icon>
         <action>MinecraftServer</action>
     </menuitem>
-    
+
+    <menuitem label='Estatísticas Minecraft'>
+        <icon>fas:chart-simple fa-fw green</icon>
+        <action>MinecraftEstatisticas</action>
+    </menuitem>
+
     <menuitem label='Logs'>
         <icon>fas:desktop fa-fw</icon>
         <menu>
