@@ -288,10 +288,11 @@ class MinecraftEstatisticas extends TPage
     {
         $id = preg_replace('/^minecraft:/', '', (string) $chave);
 
-        // mobs ficam em uma subpasta e com sufixo _face (ex.: mobs/zombie_face.png)
+        // mobs ficam em uma subpasta, em Title_Case e com sufixo _face
+        // (ex.: cave_spider -> mobs/Cave_Spider_face.png)
         if ($tipo === 'mob')
         {
-            $base = self::MC_ICON_BASE . '/mobs/' . $id . '_face';
+            $base = self::MC_ICON_BASE . '/mobs/' . ucwords($id, '_') . '_face';
         }
         else
         {
