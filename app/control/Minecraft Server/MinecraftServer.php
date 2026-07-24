@@ -44,8 +44,8 @@ class MinecraftServer extends TPage
         $this->setDatabase(self::DATABASE);
         $this->setActiveRecord('MinecraftSessao');
 
+        // datagrid geral: exibe as sessões de todos os usuários
         $criteria = new TCriteria();
-        $criteria->add(new TFilter('usuario_id', '=', TSession::getValue('userid')));
         $this->setCriteria($criteria);
 
         $this->setDefaultOrder('hora_inicio', 'desc');
@@ -75,9 +75,18 @@ class MinecraftServer extends TPage
         // calcula duração e custo (proporcional a segundos/minutos) para cada linha
         $this->setTransformer(function($objects) {
             $rate = self::getConfiguredRate();
+            $nomes = [];
 
             foreach ((array) $objects as $sessao) {
                 $inicioTs = strtotime($sessao->hora_inicio);
+
+                // nome do usuário dono da sessão (com cache para evitar buscas repetidas)
+                $uid = $sessao->usuario_id;
+                if ($uid && !isset($nomes[$uid])) {
+                    $user = SystemUser::find($uid);
+                    $nomes[$uid] = $user ? $user->name : '—';
+                }
+                $sessao->usuario_nome = $uid ? $nomes[$uid] : '—';
 
                 if (!empty($sessao->hora_fim)) {
                     $segundos = (int) $sessao->duracao_segundos;
@@ -108,7 +117,7 @@ class MinecraftServer extends TPage
             $datagrid->add($tfoot);
 
             $tdLabel = new TElement('td');
-            $tdLabel->{'colspan'} = 2;
+            $tdLabel->{'colspan'} = 3;
             $tdLabel->{'style'}   = 'text-align:right;';
             $tdLabel->add('Total');
 
@@ -209,10 +218,11 @@ class MinecraftServer extends TPage
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
         $this->datagrid->width = '100%';
 
-        $col_inicio = new TDataGridColumn('hora_inicio', 'Início',         'center', '25%');
-        $col_fim    = new TDataGridColumn('hora_fim',    'Fim',            'center', '25%');
-        $col_tempo  = new TDataGridColumn('tempo_fmt',   'Tempo',          'center', '25%');
-        $col_custo  = new TDataGridColumn('custo_fmt',   'Custo estimado', 'right',  '25%');
+        $col_usuario = new TDataGridColumn('usuario_nome', 'Usuário',        'left',   '20%');
+        $col_inicio  = new TDataGridColumn('hora_inicio',  'Início',         'center', '20%');
+        $col_fim     = new TDataGridColumn('hora_fim',     'Fim',            'center', '20%');
+        $col_tempo   = new TDataGridColumn('tempo_fmt',    'Tempo',          'center', '20%');
+        $col_custo   = new TDataGridColumn('custo_fmt',    'Custo estimado', 'right',  '20%');
 
         $formatDate = function($value) {
             if (empty($value)) {
@@ -228,6 +238,7 @@ class MinecraftServer extends TPage
         $col_inicio->setAction(new TAction([$this, 'onReload']), ['order' => 'hora_inicio']);
         $col_fim->setAction(new TAction([$this, 'onReload']),    ['order' => 'hora_fim']);
 
+        $this->datagrid->addColumn($col_usuario);
         $this->datagrid->addColumn($col_inicio);
         $this->datagrid->addColumn($col_fim);
         $this->datagrid->addColumn($col_tempo);
@@ -294,6 +305,7 @@ class MinecraftServer extends TPage
         $tr = new TElement('tr');
         $this->datagrid->prependRow($tr);
 
+        $tr->add(TElement::tag('td', ''));
         $tr->add(TElement::tag('td', $f_inicio));
         $tr->add(TElement::tag('td', $f_fim));
         $tr->add(TElement::tag('td', ''));
@@ -330,8 +342,8 @@ class MinecraftServer extends TPage
 
             $rate = self::getConfiguredRate();
 
+            // resumo geral: soma o tempo e custo de todos os usuários no período
             $criteria = new TCriteria();
-            $criteria->add(new TFilter('usuario_id', '=', TSession::getValue('userid')));
             $criteria->add(new TFilter('MONTH(hora_inicio)', '=', $mes));
             $criteria->add(new TFilter('YEAR(hora_inicio)',  '=', $ano));
 
