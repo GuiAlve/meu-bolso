@@ -42,11 +42,12 @@
                   <icon>fas:cog fa-fw</icon>
                   <action>SystemPreferenceForm#method=onEdit</action>
               </menuitem>
-              <menuitem label='Atualizar sistema'>
-                  <icon>fas:code-branch fa-fw green</icon>
-                  <action>SistemaAtualizar</action>
-              </menuitem>
         </menu>
+    </menuitem>
+
+    <menuitem label='Atualizar sistema'>
+        <icon>fas:code-branch fa-fw green</icon>
+        <action>SistemaAtualizar</action>
     </menuitem>
 
     <menuitem label='Minecraft Server'>
