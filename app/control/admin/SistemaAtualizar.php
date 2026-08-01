@@ -79,10 +79,8 @@ class SistemaAtualizar extends TPage
      */
     public static function onUpdate($param)
     {
-        $repo = escapeshellarg(PATH);
-
         // 2>&1 captura também os erros do git/SSH para exibir ao usuário.
-        $command = sprintf('git -C %s pull origin %s 2>&1', $repo, escapeshellarg(self::BRANCH));
+        $command = sprintf('%s pull origin %s 2>&1', self::gitPrefix(), escapeshellarg(self::BRANCH));
         $output  = shell_exec($command);
         $output  = trim((string) $output);
 
@@ -105,17 +103,29 @@ class SistemaAtualizar extends TPage
      */
     private static function getGitInfo()
     {
-        $repo = escapeshellarg(PATH);
+        $git = self::gitPrefix();
 
-        $branch = trim((string) shell_exec(sprintf('git -C %s rev-parse --abbrev-ref HEAD 2>&1', $repo)));
-        $commit = trim((string) shell_exec(sprintf('git -C %s log -1 --pretty=format:%%h\\ %%s 2>&1', $repo)));
-        $date   = trim((string) shell_exec(sprintf('git -C %s log -1 --date=format:%%d/%%m/%%Y\\ %%H:%%M --pretty=format:%%cd 2>&1', $repo)));
+        $branch = trim((string) shell_exec(sprintf('%s rev-parse --abbrev-ref HEAD 2>&1', $git)));
+        $commit = trim((string) shell_exec(sprintf('%s log -1 --pretty=format:%%h\\ %%s 2>&1', $git)));
+        $date   = trim((string) shell_exec(sprintf('%s log -1 --date=format:%%d/%%m/%%Y\\ %%H:%%M --pretty=format:%%cd 2>&1', $git)));
 
         return [
             'branch' => $branch ?: '—',
             'commit' => $commit ?: '—',
             'date'   => $date   ?: '—',
         ];
+    }
+
+    /**
+     * Prefixo comum dos comandos git: aponta para a raiz do projeto (-C) e
+     * marca o diretório como seguro (safe.directory), evitando o erro de
+     * "dubious ownership" quando o repo pertence a outro usuário (ex.: o PHP
+     * roda como www-data e os arquivos são de outro dono).
+     */
+    private static function gitPrefix()
+    {
+        $repo = escapeshellarg(PATH);
+        return sprintf('git -c safe.directory=%s -C %s', $repo, $repo);
     }
 
     private static function infoRow($label, $value)
