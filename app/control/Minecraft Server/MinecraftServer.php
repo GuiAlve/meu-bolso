@@ -535,8 +535,9 @@ class MinecraftServer extends TPage
         {
             TTransaction::open(self::DATABASE);
 
+            // A sessão representa a instância EC2 (recurso único e compartilhado):
+            // fecha todas as sessões abertas dela, independentemente de quem a abriu.
             $criteria = new TCriteria();
-            $criteria->add(new TFilter('usuario_id',  '=', TSession::getValue('userid')));
             $criteria->add(new TFilter('instance_id', '=', self::INSTANCE_ID));
             $criteria->add(new TFilter('hora_fim', 'IS', NULL));
             $criteria->setProperty('order', 'hora_inicio');
@@ -610,8 +611,9 @@ class MinecraftServer extends TPage
         {
             TTransaction::open(self::DATABASE);
 
+            // Só pode existir uma sessão aberta por instância (recurso compartilhado):
+            // verifica por instance_id, sem filtrar por usuário.
             $criteria = new TCriteria();
-            $criteria->add(new TFilter('usuario_id',  '=', TSession::getValue('userid')));
             $criteria->add(new TFilter('instance_id', '=', self::INSTANCE_ID));
             $criteria->add(new TFilter('hora_fim', 'IS', NULL));
 
