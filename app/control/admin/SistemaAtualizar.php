@@ -23,6 +23,10 @@ class SistemaAtualizar extends TPage
     // Branch de referência para o pull.
     const BRANCH = 'main';
 
+    // URL HTTPS pública do repositório. Usada no pull para dispensar SSH/chave de
+    // deploy no usuário do web server (o remote SSH continua para os pushes).
+    const REPO_HTTPS = 'https://github.com/GuiAlve/meu-bolso.git';
+
     protected $form;
 
     public function __construct()
@@ -79,8 +83,13 @@ class SistemaAtualizar extends TPage
      */
     public static function onUpdate($param)
     {
-        // 2>&1 captura também os erros do git/SSH para exibir ao usuário.
-        $command = sprintf('%s pull origin %s 2>&1', self::gitPrefix(), escapeshellarg(self::BRANCH));
+        // Puxa pela URL HTTPS pública (sem SSH). 2>&1 captura erros para exibição.
+        $command = sprintf(
+            '%s pull %s %s 2>&1',
+            self::gitPrefix(),
+            escapeshellarg(self::REPO_HTTPS),
+            escapeshellarg(self::BRANCH)
+        );
         $output  = shell_exec($command);
         $output  = trim((string) $output);
 
